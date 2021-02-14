@@ -3,8 +3,7 @@ import streamlit as st
 from docx import Document
 import pandas as pd
 import gspread
-import os
-from dotenv import load_dotenv
+
 
 
 # Generic Configurations
@@ -15,16 +14,11 @@ Allows user to choose the right mitigation strategies based on provided construc
 ''')
 mitigation_list = [ ]
 
-# Google pre config
-load_dotenv()
-open_key = os.getenv('open_by_key')
-
-
 @st.cache
 def data_from_googlesheets():
 	# Importing the data from google sheets
 	gc = gspread.service_account(filename='Credentials.json')
-	sh = gc.open_by_key(open_key)
+	sh = gc.open_by_key("1kP9veqfsTKnhpeO5CL9A8OLFZFlT4aaYiivBQwAihfY")
 	worksheet = sh.sheet1
 	data = worksheet.get_all_values()
 	headers = data.pop(0)

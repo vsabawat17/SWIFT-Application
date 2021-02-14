@@ -1,3 +1,4 @@
-Credentials.json
 *.env
-test.txt
+.vscode/
+swift_env/
+Credentials.json
