@@ -1,4 +1,4 @@
 *.env
 .vscode/
-swift_env/
+swift_venv/
 Credentials.json

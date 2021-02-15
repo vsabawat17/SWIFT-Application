@@ -3,8 +3,11 @@ import streamlit as st
 from docx import Document
 import pandas as pd
 import gspread
-
-
+import os
+from oauth2client.service_account import ServiceAccountCredentials
+import json
+from dotenv import load_dotenv
+load_dotenv()
 
 # Generic Configurations
 st.set_page_config(layout="wide")
@@ -14,10 +17,21 @@ Allows user to choose the right mitigation strategies based on provided construc
 ''')
 mitigation_list = [ ]
 
+#Pre config google
+
+# scopes = ['https://spreadsheets.google.com/feeds&#39;]
+json_creds = os.getenv("GOOGLE_SHEETS_CREDS_JSON")
+st.write(json_creds)
+creds_dict = json.loads(json_creds)
+creds_dict["private_key"] = creds_dict["private_key"].replace("\\\\n", "\n")
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict)
+client = gspread.authorize(creds)
+
 @st.cache
 def data_from_googlesheets():
 	# Importing the data from google sheets
-	gc = gspread.service_account(filename = GOOGLE_CREDENTIALS')
+	# gc = gspread.service_account(filename = CRED)
+	gc = gspread.authorize(creds)
 	sh = gc.open_by_key("1kP9veqfsTKnhpeO5CL9A8OLFZFlT4aaYiivBQwAihfY")
 	worksheet = sh.sheet1
 	data = worksheet.get_all_values()
