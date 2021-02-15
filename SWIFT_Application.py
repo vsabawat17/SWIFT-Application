@@ -21,7 +21,7 @@ mitigation_list = [ ]
 
 # scopes = ['https://spreadsheets.google.com/feeds&#39;]
 json_creds = os.getenv("GOOGLE_SHEETS_CREDS_JSON")
-st.write(json_creds)
+# st.write(json_creds)
 creds_dict = json.loads(json_creds)
 creds_dict["private_key"] = creds_dict["private_key"].replace("\\\\n", "\n")
 creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict)
