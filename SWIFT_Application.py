@@ -17,7 +17,7 @@ mitigation_list = [ ]
 @st.cache
 def data_from_googlesheets():
 	# Importing the data from google sheets
-	gc = gspread.service_account(filename='Credentials.json')
+	gc = gspread.service_account(filename = GOOGLE_CREDENTIALS')
 	sh = gc.open_by_key("1kP9veqfsTKnhpeO5CL9A8OLFZFlT4aaYiivBQwAihfY")
 	worksheet = sh.sheet1
 	data = worksheet.get_all_values()
