@@ -4,10 +4,20 @@ from docx import Document
 import pandas as pd
 import gspread
 import os
+from io import BytesIO
 from oauth2client.service_account import ServiceAccountCredentials
 import json
 from dotenv import load_dotenv
 load_dotenv()
+import base64
+
+# To download as txt
+def get_binary_file_downloader_html(bin_file, file_label='File'):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    bin_str = base64.b64encode(data).decode()
+    href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">Download {file_label}</a>'
+    return href
 
 # Generic Configurations
 st.set_page_config(layout="wide")
@@ -18,10 +28,7 @@ Allows user to choose the right mitigation strategies based on provided construc
 mitigation_list = [ ]
 
 #Pre config google
-
-# scopes = ['https://spreadsheets.google.com/feeds&#39;]
 json_creds = os.getenv("GOOGLE_SHEETS_CREDS_JSON")
-# st.write(json_creds)
 creds_dict = json.loads(json_creds)
 creds_dict["private_key"] = creds_dict["private_key"].replace("\\\\n", "\n")
 creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict)
@@ -38,6 +45,19 @@ def data_from_googlesheets():
 	headers = data.pop(0)
 	google_Data = pd.DataFrame(data , columns=headers)
 	return google_Data
+
+
+# Function to save the word document
+def get_docx_download_link(docx, filename):
+	"""Generates a link allowing the docx file to be downloaded
+	in:  document object, filename
+	out: href string
+	"""
+	output = BytesIO()
+	docx.save(output)
+	docx_str = base64.b64encode(output.getvalue()).decode()
+	href = f'<a href="data:application/octet-stream;base64,{docx_str}" download="{filename}">Download the report: {filename}</a>'
+	return href
 
 
 # Uploading the data from google sheets
@@ -177,10 +197,10 @@ for i in mitigation_list:
 	document.add_paragraph(f'{i}' , style='List Bullet')
 
 st.markdown('# Save Work')
-st.write(f'To save the file, Please provide the folder locations: (eg: C:\SWIFT\Report)')
-filepath = st.text_input("path to save the file: ")
-if st.button("save") and filepath:
-	document.save(f'{filepath}\SWIFT_{date}.docx')
-	st.write('File saved')
+st.write(f'To save the file, Please provide the filename')
+filename = st.text_input("Filename: ")
+if st.button("save") and filename:
+	filename = filename+".docx"
+	st.markdown(get_docx_download_link(document,filename), unsafe_allow_html=True)
 else:
-	st.write("Provide path to save the file, if needed")
+	st.write("Provide filename to save the file, if needed")
